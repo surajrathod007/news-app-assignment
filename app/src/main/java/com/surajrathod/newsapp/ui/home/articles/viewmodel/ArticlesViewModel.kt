@@ -17,6 +17,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ArticlesViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel(){
 
+    init {
+        loadArticles()
+    }
+
     private val _articlesScreenState = MutableStateFlow<ArticlesScreenState<List<Article>>>(ArticlesScreenState.Loading)
     val articlesScreenState: StateFlow<ArticlesScreenState<List<Article>>> = _articlesScreenState
 

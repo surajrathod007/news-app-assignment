@@ -1,72 +1,89 @@
 package com.surajrathod.newsapp.ui.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.surajrathod.newsapp.data.Article
+import com.surajrathod.newsapp.ui.articleDetails.ArticleDetailsScreen
 import com.surajrathod.newsapp.ui.home.articles.ArticlesScreen
+import com.surajrathod.newsapp.ui.navigation.ArticleDetailsRoute
+import com.surajrathod.newsapp.ui.navigation.ArticleDetailsRouteNavType
 import com.surajrathod.newsapp.ui.navigation.BottomNavItem
+import com.surajrathod.newsapp.ui.navigation.BottomNavigationBar
+import com.surajrathod.newsapp.ui.navigation.getCurrentRoute
+import kotlin.reflect.typeOf
 
 @Composable
 fun HomeScreen() {
-    val items = listOf(BottomNavItem.Articles, BottomNavItem.Saved)
 
-    // State to track the selected tab
-    var selectedTab by remember { mutableStateOf(items[0].route) }
+    val supportedRoutes = listOf(BottomNavItem.Articles.route, BottomNavItem.Saved.route)
+    val navController = rememberNavController()
+    val items = listOf(BottomNavItem.Articles, BottomNavItem.Saved)
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                items.forEach { item ->
-                    NavigationBarItem(
-                        icon = { Icon(imageVector = item.icon, contentDescription = item.label) },
-                        label = { Text(text = item.label) },
-                        selected = selectedTab == item.route,
-                        onClick = { selectedTab = item.route }
-                    )
-                }
-            }
+            if (getCurrentRoute(navController = navController) in supportedRoutes)
+                BottomNavigationBar(navController = navController, items = items)
         }
     ) { innerPadding ->
-        // Content based on selected tab
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            when (selectedTab) {
-                BottomNavItem.Articles.route -> ArticlesScreen()
-                BottomNavItem.Saved.route -> SavedScreen()
+        NavHost(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            startDestination = BottomNavItem.Articles.route,
+            enterTransition = {
+                EnterTransition.None
+            },
+            exitTransition = {
+                ExitTransition.None
             }
+        ) {
+
+            composable(BottomNavItem.Articles.route) {
+                ArticlesScreen(onReadMoreClick = { article ->
+                    navController.navigate(ArticleDetailsRoute(article = article))
+                })
+            }
+
+            composable(BottomNavItem.Saved.route) {
+                SavedScreen()
+            }
+
+            composable<ArticleDetailsRoute>(
+                typeMap = mapOf(typeOf<Article>() to ArticleDetailsRouteNavType)
+            ) {
+                val articleDetailsRoute = it.toRoute<ArticleDetailsRoute>()
+                ArticleDetailsScreen(article = articleDetailsRoute.article, onBackPressed = {
+                    navController.popBackStack()
+                })
+            }
+
         }
     }
 }
 
 
-// Saved Tab Screen
 @Composable
 fun SavedScreen() {
-    Text(text = "Saved Screen", style = MaterialTheme.typography.h2)
+    Text(text = "Saved Screen", style = MaterialTheme.typography.bodyLarge)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     MaterialTheme {
-        HomeScreen()
+        //HomeScreen()
     }
 }

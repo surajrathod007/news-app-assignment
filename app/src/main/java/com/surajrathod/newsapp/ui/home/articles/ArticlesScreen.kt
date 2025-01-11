@@ -29,18 +29,15 @@ sealed class ArticlesScreenState<out T> {
 }
 
 @Composable
-fun ArticlesScreen() {
+fun ArticlesScreen(onReadMoreClick: (Article)->Unit) {
 
     val articlesViewModel: ArticlesViewModel = hiltViewModel()
     val articlesUiState = articlesViewModel.articlesScreenState.collectAsState()
-    LaunchedEffect(Unit){
-        articlesViewModel.loadArticles()
-    }
-    ArticlesScreenUi(articleScreenState = articlesUiState.value)
+    ArticlesScreenUi(articleScreenState = articlesUiState.value, onReadMoreClick = onReadMoreClick)
 }
 
 @Composable
-fun ArticlesScreenUi(articleScreenState: ArticlesScreenState<List<Article>>) {
+fun ArticlesScreenUi(articleScreenState: ArticlesScreenState<List<Article>>,onReadMoreClick: (Article)->Unit = {}) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (articleScreenState) {
@@ -56,7 +53,7 @@ fun ArticlesScreenUi(articleScreenState: ArticlesScreenState<List<Article>>) {
                             headline = article.title ?: "",
                             description = article.description ?: "",
                             onReadMoreClick = {
-                                //todo:Navigate to web view screen
+                                onReadMoreClick.invoke(article)
                             },
                             onDeleteClick = {
                                 //todo:Remove from local db
