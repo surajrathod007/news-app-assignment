@@ -3,22 +3,17 @@ package com.surajrathod.newsapp.ui.home
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.surajrathod.newsapp.data.Article
 import com.surajrathod.newsapp.ui.articleDetails.ArticleDetailsScreen
 import com.surajrathod.newsapp.ui.home.articles.ArticlesScreen
+import com.surajrathod.newsapp.ui.home.savedArticles.SavedArticlesScreen
 import com.surajrathod.newsapp.ui.navigation.ArticleDetailsRoute
 import com.surajrathod.newsapp.ui.navigation.ArticleDetailsRouteNavType
 import com.surajrathod.newsapp.ui.navigation.BottomNavItem
@@ -58,7 +53,7 @@ fun HomeScreen() {
             }
 
             composable(BottomNavItem.Saved.route) {
-                SavedScreen()
+                SavedArticlesScreen()
             }
 
             composable<ArticleDetailsRoute>(
@@ -71,19 +66,5 @@ fun HomeScreen() {
             }
 
         }
-    }
-}
-
-
-@Composable
-fun SavedScreen() {
-    Text(text = "Saved Screen", style = MaterialTheme.typography.bodyLarge)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    MaterialTheme {
-        //HomeScreen()
     }
 }

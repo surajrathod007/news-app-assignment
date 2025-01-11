@@ -1,7 +1,7 @@
 package com.surajrathod.newsapp.ui.navigation
 
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
@@ -14,7 +14,12 @@ fun BottomNavigationBar(navController: NavController, items: List<BottomNavItem>
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.label) },
+                icon = {
+                    Icon(
+                        imageVector = if (currentRoute == item.route) item.filledIcon else item.borderIcon,
+                        contentDescription = item.label
+                    )
+                },
                 label = { Text(text = item.label) },
                 selected = currentRoute == item.route,
                 onClick = {

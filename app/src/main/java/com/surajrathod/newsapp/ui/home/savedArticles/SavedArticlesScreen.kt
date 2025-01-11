@@ -1,4 +1,4 @@
-package com.surajrathod.newsapp.ui.home.articles
+package com.surajrathod.newsapp.ui.home.savedArticles
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,52 +19,68 @@ import com.surajrathod.newsapp.data.dummyArticles
 import com.surajrathod.newsapp.ui.components.FullScreenError
 import com.surajrathod.newsapp.ui.components.FullScreenLoader
 import com.surajrathod.newsapp.ui.components.NewsCard
-import com.surajrathod.newsapp.ui.home.articles.viewmodel.ArticlesViewModel
+import com.surajrathod.newsapp.ui.home.savedArticles.viewmodel.SavedArticlesViewModel
 
-sealed class ArticlesScreenState<out T> {
-    data object Loading : ArticlesScreenState<Nothing>()
-    data class Success<out T>(val data: T) : ArticlesScreenState<T>()
-    data class Error(val message: String) : ArticlesScreenState<Nothing>()
+sealed class SavedArticlesScreenState<out T> {
+    data object Loading : SavedArticlesScreenState<Nothing>()
+    data class Success<out T>(val data: T) : SavedArticlesScreenState<T>()
+    data class Error(val message: String) : SavedArticlesScreenState<Nothing>()
 }
 
 @Composable
-fun ArticlesScreen(onReadMoreClick: (Article)->Unit) {
+fun SavedArticlesScreen() {
 
-    val articlesViewModel: ArticlesViewModel = hiltViewModel()
-    val articlesUiState = articlesViewModel.articlesScreenState.collectAsState()
-    ArticlesScreenUi(articleScreenState = articlesUiState.value, onReadMoreClick = onReadMoreClick)
+    val savedArticlesViewModel: SavedArticlesViewModel = hiltViewModel()
+    val savedArticlesScreenState = savedArticlesViewModel.savedArticleScreenState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        savedArticlesViewModel.loadFavArticles()
+    }
+
+    SavedArticlesScreenUi(
+        savedArticlesScreenState = savedArticlesScreenState.value,
+        onDeleteClick = { article ->
+            savedArticlesViewModel.removeArticle(article)
+        })
+
 }
 
 @Composable
-fun ArticlesScreenUi(articleScreenState: ArticlesScreenState<List<Article>>,onReadMoreClick: (Article)->Unit = {}) {
+fun SavedArticlesScreenUi(
+    savedArticlesScreenState: SavedArticlesScreenState<List<Article>>,
+    onDeleteClick: (Article) -> Unit = {}
+) {
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (articleScreenState) {
-            is ArticlesScreenState.Success -> {
+
+        when (savedArticlesScreenState) {
+
+            is SavedArticlesScreenState.Success -> {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(vertical = 12.dp)
                 ) {
-                    items(articleScreenState.data, key = { it.url }) { article ->
+                    items(savedArticlesScreenState.data, key = { it.url }) { article ->
                         NewsCard(
+                            showDeleteIcon = true,
                             imageUrl = article.urlToImage ?: "",
                             headline = article.title ?: "",
                             description = article.description ?: "",
                             onReadMoreClick = {
-                                onReadMoreClick.invoke(article)
+
                             },
                             onDeleteClick = {
-
+                                onDeleteClick.invoke(article)
                             })
                     }
                 }
             }
 
-            is ArticlesScreenState.Error -> {
-                FullScreenError(articleScreenState.message)
+            is SavedArticlesScreenState.Error -> {
+                FullScreenError(savedArticlesScreenState.message)
             }
 
-            ArticlesScreenState.Loading -> {
+            SavedArticlesScreenState.Loading -> {
                 FullScreenLoader()
             }
 
@@ -75,8 +92,8 @@ fun ArticlesScreenUi(articleScreenState: ArticlesScreenState<List<Article>>,onRe
 
 @Composable
 @Preview
-fun ArticleScreenUiPreview() {
+fun SavedArticleScreenUiPreview() {
     MaterialTheme {
-        ArticlesScreenUi(articleScreenState = ArticlesScreenState.Success(dummyArticles))
+        SavedArticlesScreenUi(savedArticlesScreenState = SavedArticlesScreenState.Success(dummyArticles))
     }
 }

@@ -4,23 +4,30 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.navigation.NavType
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.surajrathod.newsapp.room.SourceConverter
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+@Entity(tableName = "articles")
 @Serializable
 @Parcelize
 data class Article(
-    val author: String?=null,
-    val content: String?=null,
-    val description: String?=null,
-    val publishedAt: String?=null,
-    val source: Source?=null,
-    val title: String?=null,
-    val url: String?=null,
-    val urlToImage: String?=null
-): Parcelable
+    @PrimaryKey val url: String,
+    val author: String? = null,
+    val content: String? = null,
+    val description: String? = null,
+    val publishedAt: String? = null,
+    @TypeConverters(SourceConverter::class)
+    val source: Source? = null,
+    val title: String? = null,
+    val urlToImage: String? = null,
+    val isFavourite: Boolean = false
+) : Parcelable
 
 
 
