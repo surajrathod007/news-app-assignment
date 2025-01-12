@@ -28,7 +28,7 @@ sealed class SavedArticlesScreenState<out T> {
 }
 
 @Composable
-fun SavedArticlesScreen() {
+fun SavedArticlesScreen(onReadMoreClick: (Article) -> Unit) {
 
     val savedArticlesViewModel: SavedArticlesViewModel = hiltViewModel()
     val savedArticlesScreenState = savedArticlesViewModel.savedArticleScreenState.collectAsState()
@@ -41,14 +41,15 @@ fun SavedArticlesScreen() {
         savedArticlesScreenState = savedArticlesScreenState.value,
         onDeleteClick = { article ->
             savedArticlesViewModel.removeArticle(article)
-        })
+        }, onReadMoreClick = onReadMoreClick)
 
 }
 
 @Composable
 fun SavedArticlesScreenUi(
     savedArticlesScreenState: SavedArticlesScreenState<List<Article>>,
-    onDeleteClick: (Article) -> Unit = {}
+    onDeleteClick: (Article) -> Unit = {},
+    onReadMoreClick: (Article) -> Unit = {}
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -67,7 +68,7 @@ fun SavedArticlesScreenUi(
                             headline = article.title ?: "",
                             description = article.description ?: "",
                             onReadMoreClick = {
-
+                                onReadMoreClick.invoke(article)
                             },
                             onDeleteClick = {
                                 onDeleteClick.invoke(article)
@@ -94,6 +95,10 @@ fun SavedArticlesScreenUi(
 @Preview
 fun SavedArticleScreenUiPreview() {
     MaterialTheme {
-        SavedArticlesScreenUi(savedArticlesScreenState = SavedArticlesScreenState.Success(dummyArticles))
+        SavedArticlesScreenUi(
+            savedArticlesScreenState = SavedArticlesScreenState.Success(
+                dummyArticles
+            )
+        )
     }
 }

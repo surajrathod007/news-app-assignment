@@ -1,5 +1,8 @@
 package com.surajrathod.newsapp.ui.home.savedArticles.viewmodel
 
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.surajrathod.newsapp.api.NetworkResult
@@ -12,10 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class SavedArticlesViewModel @Inject constructor(private val articleDao: ArticleDao) : ViewModel() {
+class SavedArticlesViewModel @Inject constructor(
+    private val articleDao: ArticleDao,
+    private val mApp: Application
+) : AndroidViewModel(mApp) {
 
     private val _savedArticleScreenSTate =
         MutableStateFlow<SavedArticlesScreenState<List<Article>>>(
@@ -39,7 +46,15 @@ class SavedArticlesViewModel @Inject constructor(private val articleDao: Article
 
     fun removeArticle(article: Article) = viewModelScope.launch(Dispatchers.IO) {
         articleDao.deleteArticleByUrl(article.url)
+        deleteHtmlOffline(article.getHtmlFileName())
         loadFavArticles(showLoader = false)
+    }
+
+    private fun deleteHtmlOffline(fileName: String) {
+        val file = File(mApp.filesDir, fileName)
+        if (file.exists()) {
+            file.delete()
+        }
     }
 
 }

@@ -1,9 +1,7 @@
 package com.surajrathod.newsapp.ui.articleDetails
 
-import android.graphics.Bitmap
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,21 +28,10 @@ fun WebViewScreen(article: Article) {
                     settings.setSupportZoom(true)
 
                     webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
-                            super.onPageStarted(view, url, favicon)
-                            //isLoading.value = true // Page started loading
-                        }
 
                         override fun onPageFinished(view: WebView, url: String?) {
                             super.onPageFinished(view, url)
-                            /*// Save HTML content once the page is fully loaded
-                            view.evaluateJavascript(
-                                "(function() { return document.documentElement.outerHTML; })();"
-                            ) { htmlContent ->
-                                val file = File(context.filesDir, article.title?:"")
-                                file.writeText(htmlContent ?: "")
-                            }*/
-                            isLoading.value = false // Page loading finished
+                            isLoading.value = false
                         }
 
 
@@ -52,14 +39,13 @@ fun WebViewScreen(article: Article) {
                 }
             },
             update = { webView ->
-                webView.loadUrl(article.url?:"")
-                /*val file = File(webView.context.filesDir, article.title?:"")
+                val file = File(webView.context.filesDir, article.getHtmlFileName())
                 if (file.exists()) {
                     val htmlContent = file.readText()
                     webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                 } else {
-                    webView.loadUrl(article.url?:"")
-                }*/
+                    webView.loadUrl(article.url)
+                }
             }
         )
 

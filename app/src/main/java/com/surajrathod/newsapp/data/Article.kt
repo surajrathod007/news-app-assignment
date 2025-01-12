@@ -1,5 +1,6 @@
 package com.surajrathod.newsapp.data
 
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -27,7 +28,13 @@ data class Article(
     val title: String? = null,
     val urlToImage: String? = null,
     val isFavourite: Boolean = false
-) : Parcelable
+) : Parcelable{
+
+    fun getHtmlFileName() : String {
+        return Uri.encode(url)+".html";
+    }
+
+}
 
 
 

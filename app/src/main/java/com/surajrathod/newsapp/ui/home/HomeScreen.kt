@@ -53,7 +53,9 @@ fun HomeScreen() {
             }
 
             composable(BottomNavItem.Saved.route) {
-                SavedArticlesScreen()
+                SavedArticlesScreen(onReadMoreClick = { article ->
+                    navController.navigate(ArticleDetailsRoute(article = article))
+                })
             }
 
             composable<ArticleDetailsRoute>(
