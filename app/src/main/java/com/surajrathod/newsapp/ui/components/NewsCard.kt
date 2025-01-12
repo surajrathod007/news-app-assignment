@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.Coil
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
@@ -49,13 +50,11 @@ fun NewsCard(
             ) {
 
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
-                        contentDescription = null,
+                    CoilCacheImage(
+                        imageUrl = imageUrl,
                         modifier = Modifier
                             .size(80.dp)
                             .clip(MaterialTheme.shapes.small),
-                        contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(
@@ -95,11 +94,12 @@ fun NewsCard(
                     }
                 }
 
-                Text(text = "Read more...", modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable {
-                        onReadMoreClick.invoke()
-                    }, style = MaterialTheme.typography.bodyMedium
+                Text(
+                    text = "Read more...", modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable {
+                            onReadMoreClick.invoke()
+                        }, style = MaterialTheme.typography.bodyMedium
                 )
 
             }
@@ -117,8 +117,8 @@ fun NewsCardPreview() {
             imageUrl = "",
             headline = "Breaking News Headline",
             description = "This is a short description of the news article. It provides a quick overview.",
-            onDeleteClick = {  },
-            onReadMoreClick = {  },
+            onDeleteClick = { },
+            onReadMoreClick = { },
             showDeleteIcon = true
         )
     }

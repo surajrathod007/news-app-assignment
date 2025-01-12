@@ -1,5 +1,6 @@
 package com.surajrathod.newsapp.ui.articleDetails
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,7 +38,7 @@ fun ArticleDetailsScreen(article: Article, onBackPressed: () -> Unit) {
     val isFav = articlesViewModel.isArticleExists.collectAsState().value
     val isArticleSavingOffline = articlesViewModel.isArticleSavingOffline.collectAsState().value
 
-    LaunchedEffect (Unit) {
+    LaunchedEffect(Unit) {
         articlesViewModel.checkArticleExists(article.url)
     }
 
@@ -54,18 +59,21 @@ fun ArticleDetailsScreen(article: Article, onBackPressed: () -> Unit) {
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                if(isArticleSavingOffline){
+                if (isArticleSavingOffline) {
                     return@FloatingActionButton     //prevent saving when saving is in progress
                 }
-                if(isFav){
+                if (isFav) {
                     articlesViewModel.removeArticle(article)
-                }else{
+                } else {
                     articlesViewModel.saveArticle(article)
                 }
             }) {
-                if(isArticleSavingOffline){
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                }else{
+                if (isArticleSavingOffline) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
                     Icon(
                         imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = null
@@ -79,7 +87,6 @@ fun ArticleDetailsScreen(article: Article, onBackPressed: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
             WebViewScreen(article = article)
         }
     }
